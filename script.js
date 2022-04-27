@@ -8,7 +8,21 @@ let checkButton = document.querySelector('.btn.check');
 let againButton = document.querySelector('.btn.again');
 
 let score = 20;
-let highscore = 0;
+
+let highscore;
+
+function displayMessage(messageParam) {
+  message.textContent = messageParam;
+}
+
+//if in local storage item name => highscore set its value to highscore variable
+//else==> highscore variable = 0
+if (localStorage.getItem('highscore')) {
+  highscore = JSON.parse(localStorage.getItem('highscore'));
+  highscoreSpan.textContent = highscore;
+} else {
+  highscore = 0;
+}
 //to generate random number between 1 and 20
 let secretNumber = Math.trunc(Math.random() * 20) + 1;
 
@@ -16,7 +30,7 @@ checkButton.addEventListener('click', function () {
   const guess = Number(document.querySelector('.guess').value);
   //if guess === false
   if (!guess) {
-    message.textContent = '⛔ No Number ';
+    displayMessage('⛔ No Number ');
 
     //if guess === secretnumber
   } else if (guess === secretNumber) {
@@ -25,7 +39,7 @@ checkButton.addEventListener('click', function () {
     // set disabled attr to guess input to stop user to add other number without click on again button
     document.querySelector('.guess').setAttribute('disabled', true);
     //print in message
-    message.textContent = 'Correct Number 🎉🎊';
+    displayMessage('Correct Number 🎉🎊');
     //set Win color
     document.body.style.backgroundColor = '#60b347';
     //set borderRadius
@@ -35,28 +49,21 @@ checkButton.addEventListener('click', function () {
     if (score > highscore) {
       highscore = score;
       highscoreSpan.textContent = highscore;
+      localStorage.setItem('highscore', JSON.stringify(highscore));
     }
-    //if score greater than 0
-  } else if (score > 1) {
-    // if guess greater than secretNumber
-    if (guess > secretNumber) {
-      message.textContent = 'High Number 📈';
+  } else if (guess !== secretNumber) {
+    if (score > 1) {
+      displayMessage(guess > secretNumber ? 'High Number 📈' : 'low Number 📉');
       //decrease score when guessed num is wrong
       score--;
       scoreSpan.textContent = score;
 
-      // if guess smaller than secretNumber
-    } else if (guess < secretNumber) {
-      message.textContent = 'low Number 📉';
-      //decrease score when guessed num is wrong
-      score--;
-      scoreSpan.textContent = score;
+      //score smaller than 1 === All attempts are exhausted
+    } else {
+      scoreSpan.textContent = 0;
+      displayMessage('You lost the game 💥💢');
+      document.body.style.backgroundColor = 'rgb(161 22 0)';
     }
-    //score smaller than 1 === All attempts are exhausted
-  } else {
-    scoreSpan.textContent = 0;
-    message.textContent = 'You lost the game 💥💢';
-    document.body.style.backgroundColor = 'rgb(161 22 0)';
   }
 });
 
@@ -69,7 +76,7 @@ againButton.addEventListener('click', function () {
   //print current score number to score title
   scoreSpan.textContent = score;
   //restore default message
-  message.textContent = `Start guessing...`;
+  displayMessage(`Start guessing...`);
   //set empty value to guess input
   document.querySelector('.guess').value = '';
   //remove disabled attr from guess input
