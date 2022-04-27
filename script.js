@@ -57,7 +57,6 @@ checkButton.addEventListener('click', function () {
       //decrease score when guessed num is wrong
       score--;
       scoreSpan.textContent = score;
-
       //score smaller than 1 === All attempts are exhausted
     } else {
       scoreSpan.textContent = 0;
